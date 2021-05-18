@@ -10,9 +10,7 @@ typedef struct info_{
     char *text1;
     char *text2;
     struct info_ *next;
-    int release;
     int keys[2];
-    struct info_ *next_in_list;
 }Info;
 
 typedef struct list_{
@@ -38,7 +36,6 @@ typedef struct tree_{
 Tree *new_tree(Tree*);
 ///////////////////////   Insertion  ////////////////////
 List *insert_list(List *, Info*);
-Info *insert_to_form_list(Info*, Info*);
 /////////////////////////////////////////////////////
 Node *new_node(Node*, Info*, unsigned int);
 void node_add(Tree*, Info*);
@@ -50,12 +47,14 @@ void show_info(Info*);
 //////////////////////////   Find   /////////////////////////////
 Info *find_info(Node *, Info*, unsigned int);
 //////////////////////////   Delete  ///////////////////////////
-void delete_element(Tree *, Info*);
+void delete_element(Tree *, Info*, int);
 Node *find_node(Node *, Info*, unsigned int);
 void delete_tree(Tree*);
 void delete_node(Node*);
 void delete_node_next(Info*);
 void reset_location(Node*);
+Node *find_min(Node*);
+int delete_list(List*, int);
 //////////////////////////   Distance  ///////////////////////////
 void find_max(Node *, int[]);
 double math(int, int);
