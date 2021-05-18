@@ -128,20 +128,19 @@ void D_Timing() {
 
 
 void D_Find(Tree* tree) {
-    Info* info = NULL;
-    info = (Info*)malloc(sizeof(Info));
+    int keys[2];
+    List *list = NULL;
     printf("Please, enter first key\nEnter-->");
-    scan_int(&info->keys[0]);
+    scan_int(&keys[0]);
     printf("Please, enter second key\nEnter-->");
-    scan_int(&info->keys[1]);
-    info = find_info(tree->node, info, 0);
-    if (info == NULL) {
+    scan_int(&keys[1]);
+    list = find_info(tree->node, keys, 0);
+    if (list == NULL) {
         printf("We can`t find this element!");
     }
     else {
-        show_info(info);
+        show_list(list);
     }
-    free(info);
 }
 
 void D_Delete(Tree* tree) {
