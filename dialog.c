@@ -94,70 +94,72 @@ Info* scan_info(Info* info) {
     return info;
 }
 
-void D_Add(Tree* tree){
-    Info *info = NULL;
+void D_Add(Tree* tree) {
+    Info* info = NULL;
     info = scan_info(info);
     node_add(tree, info);
 }
 
 
-void D_Show(Tree* tree){
+void D_Show(Tree* tree) {
     printf("\n////////////////////// Tree //////////////////////\n\n");
     print_tree(tree->node, 0);
 }
 
-void D_Timing(){
-    Tree *tree = NULL;
+void D_Timing() {
+    Tree* tree = NULL;
     tree = new_tree(tree);
-    Info *info = NULL;
+    Info* info = NULL;
     int count, key[2];
     printf("Enter count of repeating\nEnter-->");
     scan_int(&count);
     printf("Start testing...\n");
     clock_t begin_add = clock();
-    for (int i = 0; i < count; i++){
+    for (int i = 0; i < count; i++) {
         key[0] = rand();
         key[1] = rand();
         info = info_rand(info, key);
         node_add(tree, info);
     }
     clock_t end_add = clock();
-    double time_spent_add = (double )(end_add - begin_add)/CLOCKS_PER_SEC;
+    double time_spent_add = (double)(end_add - begin_add) / CLOCKS_PER_SEC;
     printf("Testing complete, result of adding-->%f", time_spent_add);
 }
 
 
-void D_Find(Tree* tree){
-    Info *info = NULL;
-    info = (Info*)malloc(sizeof (Info));
+void D_Find(Tree* tree) {
+    Info* info = NULL;
+    info = (Info*)malloc(sizeof(Info));
     printf("Please, enter first key\nEnter-->");
     scan_int(&info->keys[0]);
     printf("Please, enter second key\nEnter-->");
     scan_int(&info->keys[1]);
     info = find_info(tree->node, info, 0);
-    if (info == NULL){
+    if (info == NULL) {
         printf("We can`t find this element!");
-    } else{
+    }
+    else {
         show_info(info);
     }
+    free(info);
 }
 
-void D_Delete(Tree* tree){
-    Info *info = NULL;
+void D_Delete(Tree* tree) {
+    Info* info = NULL;
     int release;
-    info = (Info*)malloc(sizeof (Info));
+    info = (Info*)malloc(sizeof(Info));
     printf("Please, enter first key\nEnter-->");
     scan_int(&info->keys[0]);
     printf("Please, enter second key\nEnter-->");
     scan_int(&info->keys[1]);
     printf("Please, enter release\nEnter-->");
     scan_int(&release);
-    delete_element(tree , info, release);
+    delete_element(tree, info, release);
     free(info);
 }
 
-void D_Distance(Tree* tree){
-    int key[2] = {0, 0};
+void D_Distance(Tree* tree) {
+    int key[2] = { 0, 0 };
     find_max(tree->node, key);
     printf("[%d:%d]", key[0], key[1]);
 }
@@ -166,13 +168,13 @@ void D_Distance(Tree* tree){
 /////////////////////////////////////
 
 
-Info *info_rand(Info* info, int key[]){
-    info = (Info*)malloc(sizeof (Info));
+Info* info_rand(Info* info, int key[]) {
+    info = (Info*)malloc(sizeof(Info));
     info->keys[0] = key[0];
     info->keys[1] = key[1];
-    info->text1 = (char*)malloc(sizeof (char )*2);
+    info->text1 = (char*)malloc(sizeof(char) * 2);
     *info->text1 = 'a';
-    info->text2 = (char *)malloc(sizeof (char )*2);
+    info->text2 = (char*)malloc(sizeof(char) * 2);
     *info->text2 = 'a';
     info->next = NULL;
     return info;
