@@ -13,8 +13,10 @@ void D_Add(Tree*);
 void D_Show(Tree*);
 void D_Timing();
 void D_Find(Tree*);
+void D_Delete(Tree*);
+void D_Distance(Tree*);
 char *scan_string(char *);
 Info *scan_info(Info*);
-Info *copy_info(Info*);
+Info *info_rand(Info*, int[]);
 
 #endif //LAB4B_1_DIALOG_H
