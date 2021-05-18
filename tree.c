@@ -281,6 +281,7 @@ void delete_element(Tree* tree, Info* info, int release) {
     Node* right = NULL, * left = NULL;
     Node* node_parent = NULL, * reset = NULL;
     Node* min = NULL;
+    int keys;
     node = find_node(tree->node, info, 0);
     if (node == NULL) {
         return;
@@ -320,6 +321,7 @@ void delete_element(Tree* tree, Info* info, int release) {
         }
     }
     else {
+        keys = node->list->head->keys[0];
         int k = delete_list(node->list, release);
         if (k == 1) {
             right = parent->right;
@@ -341,7 +343,7 @@ void delete_element(Tree* tree, Info* info, int release) {
                 reset_location(reset);
                 if (reset != min) {
                     parent->left = min;
-                    if (parent->location == node->list->head->keys[0]) {
+                    if (parent->location == keys) {
                         parent->location = min->list->head->keys[0];
                         min->location = min->list->head->keys[1];
                     }
@@ -349,11 +351,14 @@ void delete_element(Tree* tree, Info* info, int release) {
                         parent->location = min->list->head->keys[1];
                         min->location = min->list->head->keys[0];
                     }
+                    free(min->parent->list);
+                    free(min->parent);
                     min->parent = parent;
+                } else{
+                    free(parent->list);
+                    free(parent);
                 }
             }
-            free(parent->list);
-            free(parent);
             free(node->list);
             free(node);
         }
