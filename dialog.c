@@ -91,8 +91,6 @@ Info* scan_info(Info* info) {
     printf("Second string-->");
     info->text2 = scan_string(info->text2);
     info->next = NULL;
-    info->next_in_list = NULL;
-    info->release = 0;
     return info;
 }
 
@@ -146,17 +144,20 @@ void D_Find(Tree* tree){
 
 void D_Delete(Tree* tree){
     Info *info = NULL;
+    int release;
     info = (Info*)malloc(sizeof (Info));
     printf("Please, enter first key\nEnter-->");
     scan_int(&info->keys[0]);
     printf("Please, enter second key\nEnter-->");
     scan_int(&info->keys[1]);
-    delete_element(tree , info);
+    printf("Please, enter release\nEnter-->");
+    scan_int(&release);
+    delete_element(tree , info, release);
     free(info);
 }
 
 void D_Distance(Tree* tree){
-    int key[2] = {tree->node->list->head->keys[0], tree->node->list->head->keys[1]};
+    int key[2] = {0, 0};
     find_max(tree->node, key);
     printf("[%d:%d]", key[0], key[1]);
 }
@@ -169,8 +170,6 @@ Info *info_rand(Info* info, int key[]){
     info = (Info*)malloc(sizeof (Info));
     info->keys[0] = key[0];
     info->keys[1] = key[1];
-    info->next_in_list = NULL;
-    info->release = 0;
     info->text1 = (char*)malloc(sizeof (char )*2);
     *info->text1 = 'a';
     info->text2 = (char *)malloc(sizeof (char )*2);
