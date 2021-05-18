@@ -93,14 +93,6 @@ void show_node(Node* node, int offset) {
     }
 }
 
-void show_info(Info* info) {
-    printf("[%d;%d]", info->keys[0], info->keys[1]);
-    while (info != NULL) {
-        printf(" (%s,%s) ", info->text1, info->text2);
-        info = info->next;
-    }
-}
-
 
 
 ///////////////////////////////////////////////////////////////////
@@ -159,22 +151,32 @@ void add_no_null(Node* node, Info* info, unsigned int depth) {
 }
 
 
-Info* find_info(Node* node, Info* info, unsigned int depth) {
+List *find_info(Node* node, int keys[], unsigned int depth) {
     if (node == NULL) {
         return NULL;
     }
     unsigned int axis = depth % 2;
-    if (info->keys[axis] > node->location && node->location != 0) {
-        return find_info(node->right, info, depth + 1);
+    if (keys[axis] > node->location && node->location != 0) {
+        return find_info(node->right, keys, depth + 1);
     }
-    else if (info->keys[axis] <= node->location && node->location != 0 && info->keys[0] != node->list->head->keys[0] && info->keys[1] != node->list->head->keys[1]) {
-        return find_info(node->left, info, depth + 1);
+    else if (keys[axis] <= node->location && node->location != 0 && keys[0] != node->list->head->keys[0] && keys[1] != node->list->head->keys[1]) {
+        return find_info(node->left, keys, depth + 1);
     }
-    if (info->keys[0] == node->list->head->keys[0] && info->keys[1] == node->list->head->keys[1]) {
-        return node->list->head;
+    if (keys[0] == node->list->head->keys[0] && keys[1] == node->list->head->keys[1]) {
+        return node->list;
     }
     else {
         return NULL;
+    }
+}
+
+void show_list(List* list){
+    Info *ptr = NULL;
+    ptr = list->head;
+    printf("[%d;%d] ", ptr->keys[0], ptr->keys[1]);
+    while (ptr != NULL){
+        printf("(%s, %s) ", ptr->text1, ptr->text2);
+        ptr = ptr->next;
     }
 }
 
