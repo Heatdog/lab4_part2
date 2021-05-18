@@ -34,7 +34,7 @@ void dialog(Tree* tree)
                 break;
             }
             case 3:{
-                //D_Delete(tree);
+                D_Delete(tree);
                 break;
             }
             case 4:{
@@ -42,11 +42,11 @@ void dialog(Tree* tree)
                 break;
             }
             case 5:{
-                //D_Distance(tree);
+                D_Distance(tree);
                 break;
             }
             default:{
-                //D_Timing();
+                D_Timing();
                 break;
             }
         }
@@ -108,7 +108,7 @@ void D_Show(Tree* tree){
     print_tree(tree->node, 0);
 }
 
-/*void D_Timing(){
+void D_Timing(){
     Tree *tree = NULL;
     tree = new_tree(tree);
     Info *info = NULL;
@@ -121,14 +121,12 @@ void D_Show(Tree* tree){
         key[0] = rand();
         key[1] = rand();
         info = info_rand(info, key);
-        tree->list = insert_list(tree->list, info);
+        node_add(tree, info);
     }
-    tree->node->list = copy_list(tree->list);
-    insert_kd_tree(tree->node, 0);
     clock_t end_add = clock();
     double time_spent_add = (double )(end_add - begin_add)/CLOCKS_PER_SEC;
     printf("Testing complete, result of adding-->%f", time_spent_add);
-}*/
+}
 
 
 void D_Find(Tree* tree){
@@ -136,7 +134,7 @@ void D_Find(Tree* tree){
     info = (Info*)malloc(sizeof (Info));
     printf("Please, enter first key\nEnter-->");
     scan_int(&info->keys[0]);
-    printf("Please, second first key\nEnter-->");
+    printf("Please, enter second key\nEnter-->");
     scan_int(&info->keys[1]);
     info = find_info(tree->node, info, 0);
     if (info == NULL){
@@ -146,5 +144,37 @@ void D_Find(Tree* tree){
     }
 }
 
+void D_Delete(Tree* tree){
+    Info *info = NULL;
+    info = (Info*)malloc(sizeof (Info));
+    printf("Please, enter first key\nEnter-->");
+    scan_int(&info->keys[0]);
+    printf("Please, enter second key\nEnter-->");
+    scan_int(&info->keys[1]);
+    delete_element(tree , info);
+    free(info);
+}
+
+void D_Distance(Tree* tree){
+    int key[2] = {tree->node->list->head->keys[0], tree->node->list->head->keys[1]};
+    find_max(tree->node, key);
+    printf("[%d:%d]", key[0], key[1]);
+}
+
 
 /////////////////////////////////////
+
+
+Info *info_rand(Info* info, int key[]){
+    info = (Info*)malloc(sizeof (Info));
+    info->keys[0] = key[0];
+    info->keys[1] = key[1];
+    info->next_in_list = NULL;
+    info->release = 0;
+    info->text1 = (char*)malloc(sizeof (char )*2);
+    *info->text1 = 'a';
+    info->text2 = (char *)malloc(sizeof (char )*2);
+    *info->text2 = 'a';
+    info->next = NULL;
+    return info;
+}
