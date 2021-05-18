@@ -43,9 +43,9 @@ void add_no_null(Node*, Info*, unsigned int);
 //////////////////////////   Show   /////////////////////////////
 void print_tree(Node*, int);
 void show_node(Node*, int);
-void show_info(Info*);
 //////////////////////////   Find   /////////////////////////////
-Info *find_info(Node *, Info*, unsigned int);
+List *find_info(Node *, int[], unsigned int);
+void show_list(List*);
 //////////////////////////   Delete  ///////////////////////////
 void delete_element(Tree *, Info*, int);
 Node *find_node(Node *, Info*, unsigned int);
