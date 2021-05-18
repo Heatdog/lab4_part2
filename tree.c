@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <math.h>
 
-int number =  1;
 
 Tree *new_tree(Tree* tree){
     tree = (Tree*)malloc(sizeof (Tree));
@@ -24,21 +23,12 @@ List *insert_list(List* list, Info* info){
         list->tail = info;
         list->n = 1;
     } else{
-        list->tail->next_in_list = info;
+        list->tail->next = info;
         list->tail = info;
-        info->next_in_list = NULL;
+        info->next = NULL;
         list->n++;
     }
     return list;
-}
-
-Info *insert_to_form_list(Info *info_prev, Info* info){
-    while (info_prev->next != NULL){
-        info_prev = info_prev->next;
-    }
-    info_prev->next = info;
-    info->next = NULL;
-    return info_prev;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -58,21 +48,21 @@ Node *new_node(Node* node, Info* info, unsigned int axis){
 
 
 void printList(List* list, int offset){
+    if (list == NULL){
+        return;
+    }
     Info *ptr = list->head;
     Info *info = list->head;
-    for (int i = 0; i < number; i++){
-        if (ptr != NULL){
-            for (int k = 0; k < offset; k++){
-                printf("\t");
-            }
-            printf("[%d;%d] ", info->keys[0], info->keys[1]);
-            while (info != NULL){
-                printf("(%s, %s) ", info->text1, info->text2);
-                info = info->next;
-            }
-            printf("\n");
-            ptr = ptr->next_in_list;
+    if (ptr != NULL){
+        for (int k = 0; k < offset; k++){
+            printf("\t");
         }
+        printf("[%d;%d] ", info->keys[0], info->keys[1]);
+        while (info != NULL){
+            printf("(%s, %s) ", info->text1, info->text2);
+            info = info->next;
+        }
+        printf("\n");
     }
 }
 
@@ -124,24 +114,26 @@ void node_add(Tree* tree, Info* info){
 void add_no_null(Node* node, Info* info, unsigned int depth){
     unsigned int axis = depth%2;
     if (info->keys[axis] >= node->location){
-        if (node->right == NULL && node->list->head->keys[axis] != info->keys[axis]){
-            node->right = new_node(node->right, info, depth);
-            node->right->parent = node;
-        } else if (node->list->head->keys[0] == info->keys[0] && node->list->head->keys[1] == info->keys[1]){
-            node->list->head = insert_to_form_list(node->list->head, info);
-            return;
-        } else if (node->right == NULL && node->list->head->keys[axis] == info->keys[axis]){
+        if (node->list->head->keys[0] == info->keys[0] && node->list->head->keys[1] == info->keys[1] && node->left != NULL && node->right != NULL){
+            add_no_null(node->left, info, depth+1);
+        } else if (node->list->head->keys[0] == info->keys[0] && node->list->head->keys[1] == info->keys[1] && node->left == NULL && node->right == NULL){
+           node->list = insert_list(node->list, info);
+           return;
+       } else if (node->right == NULL && node->list->head->keys[axis] != info->keys[axis]){
+           node->right = new_node(node->right, info, depth);
+           node->right->parent = node;
+       } else if (node->right == NULL && node->list->head->keys[axis] == info->keys[axis]){
             node->right = new_node(node->right, node->list->head, depth);
             node->right->parent = node;
             add_no_null(node->right, info, depth+1);
             return;
-        }else{
+       }else{
             add_no_null(node->right, info, depth+1);
-        }
-        if (node->left == NULL){
-            node->left = new_node(node->left, node->list->head, depth);
-            node->left->parent = node;
-        }
+       }
+       if (node->left == NULL){
+           node->left = new_node(node->left, node->list->head, depth);
+           node->left->parent = node;
+       }
     } else{
         if (node->left == NULL){
             node->left = new_node(node->left, info, depth);
@@ -207,9 +199,51 @@ void delete_node(Node* node){
         delete_node(node->right);
         if (node->left == NULL && node->right == NULL){
             delete_node_next(node->list->head);
+            free(node->list);
         }
         free(node);
     }
+}
+
+int delete_list(List* list, int release){
+    Info *ptr = NULL, *ptr_prev = NULL;
+    ptr = list->head;
+    for (int i = 1; i < release; i++){
+        ptr_prev = ptr;
+        ptr = ptr->next;
+        if (ptr == NULL){
+            return 0;
+        }
+    }
+    if (list->head == list->tail){
+        free(ptr->text1);
+        free(ptr->text2);
+        free(ptr);
+        return 1;
+    }
+    if (ptr == list->head){
+        list->head = ptr->next;
+        free(ptr->text1);
+        free(ptr->text2);
+        free(ptr);
+        list->n--;
+        return 0;
+    }
+    if (ptr == list->tail){
+        list->tail = ptr_prev;
+        ptr_prev->next = NULL;
+        free(ptr->text1);
+        free(ptr->text2);
+        free(ptr);
+        list->n--;
+        return 0;
+    }
+    ptr_prev->next = ptr->next;
+    free(ptr->text1);
+    free(ptr->text2);
+    free(ptr);
+    list->n--;
+    return 0;
 }
 
 
@@ -224,56 +258,83 @@ void delete_node_next(Info*  info){
     }
 }
 
-void delete_element(Tree *tree, Info* info){
+void delete_element(Tree *tree, Info* info, int release){
     Node *node = NULL, *parent = NULL;
     Node *right = NULL, *left = NULL;
-    Node *node_parent = NULL;
+    Node *node_parent = NULL, *reset = NULL;
+    Node *min = NULL;
     node = find_node(tree->node, info, 0);
     if (node == NULL){
         return;
     }
     parent = node->parent;
     if (parent == NULL){
-        delete_node_next(node->list->head);
-        free(node);
-        tree->node = NULL;
+        int k = delete_list(node->list, release);
+        if (k == 1){
+            free(node);
+            tree->node = NULL;
+        }
     } else if (parent->right == node){
-        delete_node_next(node->list->head);
-        node_parent = parent->parent;
-        left = parent->left;
-        if (node_parent == NULL){
-            tree->node = left;
-            left->parent = NULL;
-        } else{
-            if (node_parent->left == parent){
-                node_parent->left = left;
+        int k = delete_list(node->list, release);
+        if (k == 1){
+            node_parent = parent->parent;
+            left = parent->left;
+            if (node_parent == NULL){
+                tree->node = left;
+                left->parent = NULL;
             } else{
-                node_parent->right = left;
+                if (node_parent->left == parent){
+                    node_parent->left = left;
+                } else{
+                    node_parent->right = left;
+                }
+                parent->left->parent = node_parent;
             }
-            parent->left->parent = node_parent;
+            reset_location(left);
+            free(parent);
+            free(node);
         }
-        reset_location(left);
-        free(parent);
-        free(node);
     } else{
-        delete_node_next(node->list->head);
-        node_parent = parent->parent;
-        right = parent->right;
-        if (node_parent == NULL){
-            tree->node = right;
-            right->parent = NULL;
-        } else{
-            if (node_parent->right == parent){
-                node_parent->right = right;
-            } else{
-                node_parent->left = right;
+        int k = delete_list(node->list, release);
+        if (k == 1) {
+            right = parent->right;
+            min = find_min(right);
+            if (min->parent->parent == NULL) {
+                tree->node = min;
+                min->parent = NULL;
+                reset_location(min);
+            } else {
+                reset = min->parent->right;
+                if (min->parent->parent->right == min->parent) {
+                    min->parent->parent->right = reset;
+                } else {
+                    min->parent->parent->left = reset;
+                }
+                reset->parent = min->parent->parent;
+                reset_location(reset);
+                if (reset != min) {
+                    parent->left = min;
+                    if (parent->location == node->list->head->keys[0]) {
+                        parent->location = min->list->head->keys[0];
+                        min->location = min->list->head->keys[1];
+                    } else {
+                        parent->location = min->list->head->keys[1];
+                        min->location = min->list->head->keys[0];
+                    }
+                    free(min->parent);
+                    min->parent = parent;
+                }
             }
-            right->parent = node_parent;
+            free(node);
         }
-        free(node->parent);
-        free(node);
-        reset_location(right);
     }
+}
+
+Node *find_min(Node* node){
+    while (node->left != NULL){
+        node = node->left;
+    }
+    return node;
 }
 
 void reset_location(Node* node){
@@ -297,7 +358,7 @@ void find_max(Node* node, int key[]){
     if (node == NULL){
         return;
     } else{
-        if (math(node->list->head->keys[0], node->list->head->keys[1]) > math(key[0], key[1])){
+        if (node->left == NULL && node->right == NULL && math(node->list->head->keys[0], node->list->head->keys[1]) > math(key[0], key[1])){
             key[0] = node->list->head->keys[0];
             key[1] = node->list->head->keys[1];
         }
@@ -309,16 +370,3 @@ void find_max(Node* node, int key[]){
 double math(int a, int b){
     return sqrt(a*a + b*b);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
