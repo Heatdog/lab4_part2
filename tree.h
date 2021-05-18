@@ -25,6 +25,7 @@ typedef struct list_{
 typedef struct node_{
     struct node_ *left;
     struct node_ *right;
+    struct node_ *parent;
     List *list;
     int location;
 }Node;
@@ -37,6 +38,7 @@ typedef struct tree_{
 Tree *new_tree(Tree*);
 ///////////////////////   Insertion  ////////////////////
 List *insert_list(List *, Info*);
+Info *insert_to_form_list(Info*, Info*);
 /////////////////////////////////////////////////////
 Node *new_node(Node*, Info*, unsigned int);
 void node_add(Tree*, Info*);
@@ -47,5 +49,15 @@ void show_node(Node*, int);
 void show_info(Info*);
 //////////////////////////   Find   /////////////////////////////
 Info *find_info(Node *, Info*, unsigned int);
+//////////////////////////   Delete  ///////////////////////////
+void delete_element(Tree *, Info*);
+Node *find_node(Node *, Info*, unsigned int);
+void delete_tree(Tree*);
+void delete_node(Node*);
+void delete_node_next(Info*);
+void reset_location(Node*);
+//////////////////////////   Distance  ///////////////////////////
+void find_max(Node *, int[]);
+double math(int, int);
 
 #endif //LAB4B_1_TREE_H
