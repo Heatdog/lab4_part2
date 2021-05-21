@@ -55,6 +55,7 @@ void delete_node_next(Info*);
 void reset_location(Node*);
 Node *find_min(Node*);
 int delete_list(List*, int);
+List *copy_list(List*);
 //////////////////////////   Distance  ///////////////////////////
 void find_max(Node *, int[]);
 double math(int, int);
