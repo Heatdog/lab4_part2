@@ -351,6 +351,7 @@ void delete_element(Tree* tree, Info* info, int release) {
                         parent->location = min->list->head->keys[1];
                         min->location = min->list->head->keys[0];
                     }
+                    parent->list = copy_list(min->list);
                     free(min->parent->list);
                     free(min->parent);
                     min->parent = parent;
@@ -407,4 +408,15 @@ void find_max(Node* node, int key[]) {
 
 double math(int a, int b) {
     return sqrt(a * a + b * b);
+}
+
+List *copy_list(List* list){
+    List *new = NULL;
+    Info *ptr = NULL;
+    ptr = list->head;
+    while (ptr != NULL){
+        new = insert_list(new, ptr);
+        ptr = ptr->next;
+    }
+    return new;
 }
