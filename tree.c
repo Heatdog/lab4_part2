@@ -351,6 +351,7 @@ void delete_element(Tree* tree, Info* info, int release) {
                         parent->location = min->list->head->keys[1];
                         min->location = min->list->head->keys[0];
                     }
+                    free(parent->list);
                     parent->list = copy_list(min->list);
                     free(min->parent->list);
                     free(min->parent);
